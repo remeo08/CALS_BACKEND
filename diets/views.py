@@ -1,7 +1,5 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from datetime import datetime
 from . import serializers
@@ -42,35 +40,29 @@ class DietView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-
-class PutDiet(APIView):
-    def get(self, request, pk):
-        try:
-            diet = DietList.objects.get(pk=pk)
-            serializer = serializers.DietSerializer(diet)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except diet.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
     # 한줄 평가 입력
-    def put(self, request, pk):
-        diet = DietList.objects.get(pk=pk)
+    def put(self, request):
+        created_date = request.query_params.get("created_date", "")
+        meal_category = request.query_params.get("meal_category", "")
+        diets = DietList.objects.get(user=request.user, created_date=created_date, meal_category=meal_category)
         serializer = serializers.DietSerializer(
-            diet,
+            diets,
             data=request.data,
             partial=True,
         )
         if serializer.is_valid():
-            updated_diet = serializer.save()
+            serializer.save()
             return Response(
-                serializers.DietSerializer(updated_diet).data,
+                serializer.data,
                 status=status.HTTP_202_ACCEPTED,
             )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
-        diets = DietList.objects.get(pk=pk)
+    def delete(self, request):
+        created_date = request.query_params.get("created_date", "")
+        meal_category = request.query_params.get("meal_category", "")
+        diets = DietList.objects.get(user=request.user, created_date=created_date, meal_category=meal_category)
         diets.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
