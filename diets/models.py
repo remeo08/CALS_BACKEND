@@ -2,6 +2,15 @@ from django.db import models
 from common.models import CommonModel
 
 
+class SelectedDiet(CommonModel):
+    food_name = models.CharField(max_length=250)
+    food_calorie = models.FloatField()
+    food_gram = models.PositiveIntegerField()
+
+    def __str__(self) -> str:
+        return self.food_name
+
+
 class DietList(CommonModel):
     """식단 모델"""
 
@@ -30,18 +39,19 @@ class DietList(CommonModel):
     )
     selected_diet = models.ManyToManyField(
         "SelectedDiet",
+        through="QuantityMultiple",
         related_name="diets",
     )
 
-# class QuantityByDiet(CommonModel):
-#     quantity = models.PositiveIntegerField(default=1)
 
-class SelectedDiet(CommonModel):
-    food_name = models.CharField(max_length=250)
-    food_calorie = models.FloatField()
-    food_gram = models.PositiveIntegerField()
-    food_quantity = models.PositiveIntegerField(default=True)
-    # food_quantity = models.ForeignKey("QuantityByDiet", on_delete=models.CASCADE)
+class QuantityMultiple(CommonModel):
+    diet_list = models.ForeignKey("DietList", on_delete=models.CASCADE)
+    selected_diet = models.ForeignKey("SelectedDiet", on_delete=models.CASCADE)
+    food_quantity = models.PositiveIntegerField()
+    multipled_food_calorie = models.FloatField(default=0, null=True)
+    multipled_food_gram = models.FloatField(default=0, null=True)
 
-    def __str__(self) -> str:
-        return self.food_name
+    def save(self, *args, **kwargs):
+        self.multipled_food_calorie = self.selected_diet.food_calorie * self.food_quantity
+        self.multipled_food_gram = self.selected_diet.food_gram * self.food_quantity
+        super().save(*args, **kwargs)

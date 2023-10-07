@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from math import floor
 from django.db.models import Sum
-from .models import DietList, SelectedDiet
+from .models import DietList, SelectedDiet, QuantityMultiple
 from . import serializers
 from users.serializers import RecommendedCalorieMixin
 
@@ -16,18 +16,51 @@ class SelectedDietSerializer(serializers.ModelSerializer):
         )
 
 
+class QuantityMultipleSerializer(serializers.ModelSerializer):
+    selected_diet = serializers.SelectedDietSerializer()
+    # multipled_food_calorie = SerializerMethodField()
+    # multipled_food_gram = SerializerMethodField()
+
+    class Meta:
+        model = QuantityMultiple
+        fields = (
+            "food_quantity",
+            "selected_diet",
+            "multipled_food_calorie",
+            "multipled_food_gram",
+        )
+
+    # def get_multipled_food_calorie(self, selected_diet_data):
+    #     quantity = selected_diet_data["food_quantity"]
+    #     calorie = selected_diet_data["food_calorie"]
+
+    #     total_food_calorie = quantity * calorie
+    #     return total_food_calorie
+
+    # def get_multipled_food_gram(self, selected_diet_data):
+    #     quantity = selected_diet_data["food_quantity"]
+    #     gram = selected_diet_data["food_gram"]
+
+    #     total_food_gram = quantity * gram
+    #     return total_food_gram
+
+
 class DietSerializer(serializers.ModelSerializer, RecommendedCalorieMixin):
     daily_star_rating = serializers.SerializerMethodField()
     daily_calorie_sum = serializers.SerializerMethodField()
-    selected_diet = serializers.SelectedDietSerializer(read_only=True , many=True)
+    selected_diet_quantity = serializers.QuantityMultipleSerializer(
+        source="quantitymultiple_set",
+        read_only=True,
+        many=True,
+    )
 
     class Meta:
         model = DietList
         fields = (
             "meal_category",
-            "meal_calorie", 
+            "meal_calorie",
             "daily_review",
-            "selected_diet",
+            "selected_diet_quantity",
             "created_date",
             "created_time",
             "updated_at",

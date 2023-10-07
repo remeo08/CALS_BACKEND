@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import DietList, SelectedDiet
+from .models import DietList, SelectedDiet, QuantityMultiple
 
 
 @admin.register(DietList)
@@ -29,12 +29,13 @@ class SelectedDietAdmin(admin.ModelAdmin):
         "food_gram",
     )
 
-# @admin.register(QuantityByDiet)
-# class QuantityByDietAdmin(admin.ModelAdmin):
-#     list_display = (
-#         "created_date",
-#         "created_time",
-#         "food_info",
-#         "food_quantity",
-#         "user",
-#     )
+
+@admin.register(QuantityMultiple)
+class QuantityMultipleAdmin(admin.ModelAdmin):
+    list_display = (
+        "diet_list",
+        "selected_diet",
+        "food_quantity",
+        "multipled_food_calorie",
+        "multipled_food_gram",
+    )
