@@ -20,39 +20,25 @@ class DietView(APIView):
                 return Response({'errors':"님 오늘 이미 그거 먹었음"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 # selected_diet 빈 배열 예외처리
-                if request.data["selected_diet_quantity"]:
-                    selected_diets_data = request.data.get("selected_diet_quantity", [])
+                if request.data["selected_diet"]:
                     diet_list_instance = serializer.save(user=request.user)
+                    selected_diets_data = request.data.get("selected_diet", [])
                     for selected_diet_data in selected_diets_data:
-                        quantity_multiple_serializer = serializers.QuantityMultipleSerializer(data=selected_diet_data)
-                        if quantity_multiple_serializer.is_valid():
-                            food_name = quantity_multiple_serializer.validated_data["selected_diet"]["food_name"]
-                            food_calorie = quantity_multiple_serializer.validated_data["selected_diet"]["food_calorie"]
-                            food_gram = quantity_multiple_serializer.validated_data["selected_diet"]["food_gram"]
-                            food_quantity = quantity_multiple_serializer.validated_data["food_quantity"]
+                        selectedDiet, created = SelectedDiet.objects.get_or_create(
+                            food_name=selected_diet_data["food_name"],
+                            defaults={
+                                "food_calorie": selected_diet_data["food_calorie"],
+                                "food_gram": selected_diet_data["food_gram"],
+                            },
+                        )
 
-                            multipled_food_calorie=food_calorie * food_quantity
-                            multipled_food_gram=food_gram * food_quantity
-
-                            selectedDiet, created = SelectedDiet.objects.get_or_create(
-                                food_name=food_name,
-                                defaults={
-                                    "food_calorie": food_calorie,
-                                    "food_gram": food_gram,
-                                },
-                            )
-
-                            QuantityMultiple.objects.create(
-                                diet_list=diet_list_instance,
-                                selected_diet=selectedDiet,
-                                food_quantity=food_quantity,
-                                multipled_food_calorie=multipled_food_calorie,
-                                multipled_food_gram=multipled_food_gram)
-                            # serializer.selected_diet.add(selectedDiet.id)  # manytomany field는 add/remove
-                            # diet.selected_diet.add(selectedDiet.id)
-                        else:
-                            return Response(quantity_multiple_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                        serializer.selected_diet.add(selectedDiet)
+                        QuantityMultiple.objects.create(
+                            diet_list=diet_list_instance,
+                            selected_diet=selectedDiet,
+                            food_quantity=selected_diet_data["food_quantity"])
+                        # serializer.selected_diet.add(selectedDiet.id)  # manytomany field는 add/remove
+                        # diet.selected_diet.add(selectedDiet.id)
+                        
                         serializer = serializers.DietSerializer(diet_list_instance)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else:

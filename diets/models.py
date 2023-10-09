@@ -48,10 +48,4 @@ class QuantityMultiple(CommonModel):
     diet_list = models.ForeignKey("DietList", on_delete=models.CASCADE)
     selected_diet = models.ForeignKey("SelectedDiet", on_delete=models.CASCADE)
     food_quantity = models.PositiveIntegerField()
-    multipled_food_calorie = models.FloatField(default=0, null=True)
-    multipled_food_gram = models.FloatField(default=0, null=True)
 
-    def save(self, *args, **kwargs):
-        self.multipled_food_calorie = self.selected_diet.food_calorie * self.food_quantity
-        self.multipled_food_gram = self.selected_diet.food_gram * self.food_quantity
-        super().save(*args, **kwargs)

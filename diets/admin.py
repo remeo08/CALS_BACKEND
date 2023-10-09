@@ -36,6 +36,4 @@ class QuantityMultipleAdmin(admin.ModelAdmin):
         "diet_list",
         "selected_diet",
         "food_quantity",
-        "multipled_food_calorie",
-        "multipled_food_gram",
     )

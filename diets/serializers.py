@@ -26,8 +26,6 @@ class QuantityMultipleSerializer(serializers.ModelSerializer):
         fields = (
             "food_quantity",
             "selected_diet",
-            "multipled_food_calorie",
-            "multipled_food_gram",
         )
 
     # def get_multipled_food_calorie(self, selected_diet_data):
