@@ -22,22 +22,15 @@ class UserInfo(APIView):
 
     # 회원 정보 수정(비밀번호, 키, 몸무게, 활동량)
     def put(self, request):
-        user = request.user
+        user = User.objects.get(user=request.user)
         serializer = serializers.UserPutSerializer(
             user,
             data=request.data,
             partial=True,
         )
         if serializer.is_valid():
-            user = User.objects.create_user(
-                username=request.data["username"],
-                password=request.data["password"],
-                height=request.data["height"],
-                weight=request.data["weight"],
-                activity=request.data["activity"],
-            )
-            updated_serializer = serializers.UserPutSerializer(user)
-            return Response(updated_serializer.data, status=status.HTTP_200_OK)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

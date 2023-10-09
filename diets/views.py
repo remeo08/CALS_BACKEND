@@ -2,15 +2,27 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
+from dateutil.relativedelta import *
 from . import serializers
 from .models import DietList, SelectedDiet, QuantityMultiple
 
 class DietView(APIView):
     def get(self, request):
         specific_date = request.query_params.get("created_date", "")
+        year, month, day = specific_date.split("-")
+        year = int(year)
+        month = int(month)
+        
+        first_day = datetime(year, month, 1)
+        next_month = datetime(year, month, 1) + relativedelta(months=1)
+        this_month_last = next_month + relativedelta(seconds=-1)
+
+        this_month_created = DietList.objects.filter(created_date__gte=first_day, created_date__lte=this_month_last).values_list('created_date', flat=True).distinct()
+
         diets = DietList.objects.filter(user=request.user, created_date=specific_date)
         serializer = serializers.DietSerializer(diets, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response({"data": serializer.data, "diet_saved_date": this_month_created }, status=status.HTTP_200_OK)
     
     def post(self, request):
         serializer = serializers.DietSerializer(data=request.data)
