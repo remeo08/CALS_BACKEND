@@ -5,12 +5,12 @@ from .models import DietList, SelectedDiet, QuantityMultiple
 from . import serializers
 from users.serializers import RecommendedCalorieMixin
 
+
 class DateSerializer(serializers.ModelSerializer):
     class Meta:
-        model=DietList
-        fields = (
-            "created_date",
-        )
+        model = DietList
+        fields = ("created_date",)
+
 
 class SelectedDietSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,10 +21,9 @@ class SelectedDietSerializer(serializers.ModelSerializer):
             "food_gram",
         )
 
+
 class QuantityMultipleSerializer(serializers.ModelSerializer):
     selected_diet = serializers.SelectedDietSerializer()
-    # multipled_food_calorie = SerializerMethodField()
-    # multipled_food_gram = SerializerMethodField()
 
     class Meta:
         model = QuantityMultiple
@@ -32,20 +31,6 @@ class QuantityMultipleSerializer(serializers.ModelSerializer):
             "food_quantity",
             "selected_diet",
         )
-
-    # def get_multipled_food_calorie(self, selected_diet_data):
-    #     quantity = selected_diet_data["food_quantity"]
-    #     calorie = selected_diet_data["food_calorie"]
-
-    #     total_food_calorie = quantity * calorie
-    #     return total_food_calorie
-
-    # def get_multipled_food_gram(self, selected_diet_data):
-    #     quantity = selected_diet_data["food_quantity"]
-    #     gram = selected_diet_data["food_gram"]
-
-    #     total_food_gram = quantity * gram
-    #     return total_food_gram
 
 
 class DietSerializer(serializers.ModelSerializer, RecommendedCalorieMixin):

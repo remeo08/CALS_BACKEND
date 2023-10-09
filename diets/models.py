@@ -48,4 +48,3 @@ class QuantityMultiple(CommonModel):
     diet_list = models.ForeignKey("DietList", on_delete=models.CASCADE)
     selected_diet = models.ForeignKey("SelectedDiet", on_delete=models.CASCADE)
     food_quantity = models.PositiveIntegerField()
-
