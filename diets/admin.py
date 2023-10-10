@@ -6,7 +6,6 @@ from .models import DietList, SelectedDiet, QuantityMultiple
 class DietListAdmin(admin.ModelAdmin):
     list_display = (
         "created_date",
-        "created_time",
         "user",
         "meal_category",
         "meal_calorie",
@@ -22,8 +21,6 @@ class DietListAdmin(admin.ModelAdmin):
 @admin.register(SelectedDiet)
 class SelectedDietAdmin(admin.ModelAdmin):
     list_display = (
-        "created_date",
-        "created_time",
         "food_name",
         "food_calorie",
         "food_gram",

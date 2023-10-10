@@ -31,7 +31,6 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 CUSTOM_APPS = [
-    "common.apps.CommonConfig",
     "users.apps.UsersConfig",
     "diets.apps.DietsConfig",
 ]

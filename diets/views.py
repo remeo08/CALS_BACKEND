@@ -32,7 +32,6 @@ class DietView(APIView):
         diets = DietList.objects.filter(user=request.user, created_date=specific_date)
         serializer = serializers.DietSerializer(diets, many=True)
 
-        user_weight = request.user.weight
         user = User.objects.get(id=request.user.id)
         user_serializer = UserSerializer(user)
 
@@ -40,7 +39,7 @@ class DietView(APIView):
             {
                 "data": serializer.data,
                 "diet_saved_date": this_month_created,
-                "user_weight": user_weight,
+                "user_weight": request.user.weight,
                 "user_recommended_calorie": user_serializer.data["recommended_calorie"],
             },
             status=status.HTTP_200_OK,
@@ -52,7 +51,7 @@ class DietView(APIView):
             # meal_category 중복 예외처리
             if DietList.objects.filter(
                 user=request.user,
-                created_date=datetime.now(),
+                created_date=request.data["created_date"],
                 meal_category=request.data["meal_category"],
             ).exists():
                 return Response(

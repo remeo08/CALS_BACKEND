@@ -44,8 +44,6 @@ class DietSerializer(serializers.ModelSerializer, RecommendedCalorieMixin):
             "daily_review",
             "selected_diet_quantity",
             "created_date",
-            "created_time",
-            "updated_at",
             "daily_star_rating",
             "daily_calorie_sum",
         )

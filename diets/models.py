@@ -1,8 +1,7 @@
 from django.db import models
-from common.models import CommonModel
 
 
-class SelectedDiet(CommonModel):
+class SelectedDiet(models.Model):
     food_name = models.CharField(max_length=250)
     food_calorie = models.FloatField()
     food_gram = models.PositiveIntegerField()
@@ -11,7 +10,7 @@ class SelectedDiet(CommonModel):
         return self.food_name
 
 
-class DietList(CommonModel):
+class DietList(models.Model):
     """식단 모델"""
 
     class MealCategoryChoices(models.TextChoices):
@@ -42,9 +41,10 @@ class DietList(CommonModel):
         through="QuantityMultiple",
         related_name="diets",
     )
+    created_date = models.DateField()
 
 
-class QuantityMultiple(CommonModel):
+class QuantityMultiple(models.Model):
     diet_list = models.ForeignKey("DietList", on_delete=models.CASCADE)
     selected_diet = models.ForeignKey("SelectedDiet", on_delete=models.CASCADE)
     food_quantity = models.PositiveIntegerField()
