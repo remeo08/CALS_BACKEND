@@ -94,46 +94,43 @@ class DietView(APIView):
     def put(self, request):
         created_date = request.query_params.get("created_date", "")
         meal_category = request.query_params.get("meal_category", "")
-        diets = DietList.objects.filter(
+        diets = DietList.objects.get(
             user=request.user,
             created_date=created_date,
-            meal_category=meal_category,
+            meal_category=meal_category, 
         )
-        serializer = serializers.DietSerializer(
-            diets,
-            data=request.data,
-            partial=True,
-        )
-        if serializer.is_valid():
-            # QuantityMultiple.objects.get(diet_list=diets.id).delete()
-            request.data["deleted_diet"]
-            print(diets.quantitymultiple_set.get["selected_diet"], "ㅇㅇㅇㅇ")
-            serializer.save()
-            selected_diets_data = request.data.get("selected_diet", [])
 
-            for selected_diet_data in selected_diets_data:
+        if request.data["deleted_diet"]:
+            for deleted_diet in request.data["deleted_diet"]:
+                selected_id = SelectedDiet.objects.get(food_name=deleted_diet["selected_diet"]["food_name"])
+                diets.quantitymultiple_set.get(selected_diet=selected_id.id).delete()
+
+        if request.data["modified_diet"]:
+            for modified_diet in request.data["modified_diet"]:
+                selected_id = SelectedDiet.objects.get(food_name=modified_diet["selected_diet"]["food_name"])
+                quantity = diets.quantitymultiple_set.get(selected_diet=selected_id.id)
+                quantity.food_quantity = modified_diet["food_quantity"]
+                quantity.save()
+
+        if request.data["selected_diet"]:
+            for selected_diet_data in request.data["selected_diet"]:
                 selectedDiet, created = SelectedDiet.objects.get_or_create(
-                    food_name=selected_diet_data["food_name"],
+                    food_name=selected_diet_data["selected_diet"]["food_name"],
                     defaults={
-                        "food_calorie": selected_diet_data["food_calorie"],
-                        "food_gram": selected_diet_data["food_gram"],
+                        "food_calorie": selected_diet_data["selected_diet"]["food_calorie"],
+                        "food_gram": selected_diet_data["selected_diet"]["food_gram"],
                     },
                 )
 
-            QuantityMultiple.objects.create(
-                diet_list=diets,
-                selected_diet=selectedDiet,
-                food_quantity=selected_diet_data["food_quantity"],
-            )
+                QuantityMultiple.objects.create(
+                    diet_list=diets,
+                    selected_diet=selectedDiet,
+                    food_quantity=selected_diet_data["food_quantity"],
+                )
 
-            serializer.selected_diet.add(selectedDiet.id)
+        serializer = serializers.DietSerializer(diets)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
-            return Response(
-                serializer.data,
-                status=status.HTTP_202_ACCEPTED,
-            )
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
         created_date = request.query_params.get("created_date", "")

@@ -10,7 +10,6 @@ class SelectedDietSerializer(serializers.ModelSerializer):
     class Meta:
         model = SelectedDiet
         fields = (
-            "id",
             "food_name",
             "food_calorie",
             "food_gram",
