@@ -22,7 +22,7 @@ class UserInfo(APIView):
 
     # 회원 정보 수정(비밀번호, 키, 몸무게, 활동량)
     def put(self, request):
-        user = User.objects.get(user=request.user)
+        user = User.objects.get(email=request.user.email)
         serializer = serializers.UserPutSerializer(
             user,
             data=request.data,

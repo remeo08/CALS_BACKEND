@@ -90,11 +90,11 @@ class DietView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # 한줄 평가 입력
+    # 수량, selected_diet 수정
     def put(self, request):
         created_date = request.query_params.get("created_date", "")
         meal_category = request.query_params.get("meal_category", "")
-        diets = DietList.objects.get(
+        diets = DietList.objects.filter(
             user=request.user,
             created_date=created_date,
             meal_category=meal_category,
@@ -107,7 +107,7 @@ class DietView(APIView):
         if serializer.is_valid():
             # QuantityMultiple.objects.get(diet_list=diets.id).delete()
             request.data["deleted_diet"]
-            print(diets.quantitymultiple_set, "ㅇㅇㅇㅇ")
+            print(diets.quantitymultiple_set.get["selected_diet"], "ㅇㅇㅇㅇ")
             serializer.save()
             selected_diets_data = request.data.get("selected_diet", [])
 

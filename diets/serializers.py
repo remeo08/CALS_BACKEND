@@ -6,12 +6,6 @@ from . import serializers
 from users.serializers import RecommendedCalorieMixin
 
 
-class DateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DietList
-        fields = ("created_date",)
-
-
 class SelectedDietSerializer(serializers.ModelSerializer):
     class Meta:
         model = SelectedDiet
