@@ -64,6 +64,8 @@ class DietSerializer(serializers.ModelSerializer, RecommendedCalorieMixin):
         meal_calorie = diets.meal_calorie
         recommended_calorie = self.get_recommended_calorie(diets.user)
 
+        meal_calorie = float(meal_calorie)
+
         total_calorie = daily_total_calorie + meal_calorie
 
         if total_calorie <= recommended_calorie:

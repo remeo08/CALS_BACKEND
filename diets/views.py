@@ -102,17 +102,17 @@ class DietView(APIView):
         diets.meal_calorie=request.data["meal_calorie"]
         diets.save()
 
-        if request.data["deleted_diet"]:
-            for deleted_diet in request.data["deleted_diet"]:
-                selected_id = SelectedDiet.objects.get(food_name=deleted_diet["selected_diet"]["food_name"])
-                diets.quantitymultiple_set.get(selected_diet=selected_id.id).delete()
-
         if request.data["modified_diet"]:
             for modified_diet in request.data["modified_diet"]:
                 selected_id = SelectedDiet.objects.get(food_name=modified_diet["selected_diet"]["food_name"])
                 quantity = diets.quantitymultiple_set.get(selected_diet=selected_id.id)
                 quantity.food_quantity = modified_diet["food_quantity"]
                 quantity.save()
+
+        if request.data["deleted_diet"]:
+            for deleted_diet in request.data["deleted_diet"]:
+                selected_id = SelectedDiet.objects.get(food_name=deleted_diet["selected_diet"]["food_name"])
+                diets.quantitymultiple_set.get(selected_diet=selected_id.id).delete()
 
         if request.data["selected_diet"]:
             for selected_diet_data in request.data["selected_diet"]:
