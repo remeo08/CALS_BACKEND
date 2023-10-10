@@ -99,6 +99,8 @@ class DietView(APIView):
             created_date=created_date,
             meal_category=meal_category, 
         )
+        diets.meal_calorie=request.data["meal_calorie"]
+        diets.save()
 
         if request.data["deleted_diet"]:
             for deleted_diet in request.data["deleted_diet"]:
