@@ -106,7 +106,8 @@ class DietView(APIView):
         )
         if serializer.is_valid():
             # QuantityMultiple.objects.get(diet_list=diets.id).delete()
-            print(diets.quantitymultiple_set.get(selected_diet=10), "ㅇㅇㅇㅇ")
+            request.data["deleted_diet"]
+            print(diets.quantitymultiple_set, "ㅇㅇㅇㅇ")
             serializer.save()
             selected_diets_data = request.data.get("selected_diet", [])
 

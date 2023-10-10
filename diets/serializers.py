@@ -56,7 +56,6 @@ class DietSerializer(serializers.ModelSerializer, RecommendedCalorieMixin):
             "daily_star_rating",
             "daily_calorie_sum",
         )
-        read_only_fields = ("meal_category",)
 
     def get_daily_calorie_sum(self, diets):
         total_rating = DietList.objects.filter(
