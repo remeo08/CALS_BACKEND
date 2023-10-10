@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 from datetime import datetime
 from dateutil.relativedelta import *
 from . import serializers
@@ -33,7 +34,6 @@ class DietView(APIView):
 
         user_weight = request.user.weight
         user = User.objects.get(id=request.user.id)
-        print(user)
         user_serializer = UserSerializer(user)
 
         return Response(
@@ -95,7 +95,9 @@ class DietView(APIView):
         created_date = request.query_params.get("created_date", "")
         meal_category = request.query_params.get("meal_category", "")
         diets = DietList.objects.get(
-            user=request.user, created_date=created_date, meal_category=meal_category
+            user=request.user,
+            created_date=created_date,
+            meal_category=meal_category,
         )
         serializer = serializers.DietSerializer(
             diets,
@@ -103,7 +105,28 @@ class DietView(APIView):
             partial=True,
         )
         if serializer.is_valid():
+            # QuantityMultiple.objects.get(diet_list=diets.id).delete()
+            print(diets.quantitymultiple_set.get(selected_diet=10), "ㅇㅇㅇㅇ")
             serializer.save()
+            selected_diets_data = request.data.get("selected_diet", [])
+
+            for selected_diet_data in selected_diets_data:
+                selectedDiet, created = SelectedDiet.objects.get_or_create(
+                    food_name=selected_diet_data["food_name"],
+                    defaults={
+                        "food_calorie": selected_diet_data["food_calorie"],
+                        "food_gram": selected_diet_data["food_gram"],
+                    },
+                )
+
+            QuantityMultiple.objects.create(
+                diet_list=diets,
+                selected_diet=selectedDiet,
+                food_quantity=selected_diet_data["food_quantity"],
+            )
+
+            serializer.selected_diet.add(selectedDiet.id)
+
             return Response(
                 serializer.data,
                 status=status.HTTP_202_ACCEPTED,
@@ -119,3 +142,17 @@ class DietView(APIView):
         )
         diets.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ReviewView(APIView):
+    def put(self, request):
+        created_date = request.query_params.get("created_date", "")
+        specific_reviews = DietList.objects.filter(
+            created_date=created_date, user=request.user
+        )
+        for review in specific_reviews:
+            review.daily_review = request.data["daily_review"]
+            review.save()
+        serializer = serializers.ReviewPutSerializer(specific_reviews, many=True)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        

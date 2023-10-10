@@ -16,6 +16,7 @@ class SelectedDietSerializer(serializers.ModelSerializer):
     class Meta:
         model = SelectedDiet
         fields = (
+            "id",
             "food_name",
             "food_calorie",
             "food_gram",
@@ -55,6 +56,7 @@ class DietSerializer(serializers.ModelSerializer, RecommendedCalorieMixin):
             "daily_star_rating",
             "daily_calorie_sum",
         )
+        read_only_fields = ("meal_category",)
 
     def get_daily_calorie_sum(self, diets):
         total_rating = DietList.objects.filter(
@@ -78,3 +80,12 @@ class DietSerializer(serializers.ModelSerializer, RecommendedCalorieMixin):
         calorie_difference = total_calorie - recommended_calorie
         rating = 5.0 - floor(calorie_difference / 100) * 0.5
         return max(0.0, rating)
+
+
+class ReviewPutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DietList
+        fields = (
+            "daily_review",
+            "created_date",
+        )
