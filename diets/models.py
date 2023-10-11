@@ -2,7 +2,7 @@ from django.db import models
 
 
 class SelectedDiet(models.Model):
-    food_name = models.CharField(max_length=250)
+    food_name = models.CharField(max_length=120)
     food_calorie = models.FloatField()
     food_gram = models.PositiveIntegerField()
 
