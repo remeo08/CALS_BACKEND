@@ -81,6 +81,7 @@ class DietSerializer(serializers.ModelSerializer, RecommendedCalorieMixin):
             else:
                 star = 0.0
             return star
+        
 
 
 class ReviewPutSerializer(serializers.ModelSerializer):
