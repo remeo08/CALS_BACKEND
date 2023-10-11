@@ -29,7 +29,8 @@ class DietView(APIView):
         #     .distinct()
         # )
 
-        dietlist_date = DietList.objects.values_list("created_date", flat=True).order_by("created_date").distinct()
+        user_dietlist_date = DietList.objects.filter(user=request.user)
+        diet_saved_date=user_dietlist_date.values_list("created_date", flat=True).order_by("created_date").distinct()
 
         diets = DietList.objects.filter(user=request.user, created_date=specific_date)
         serializer = serializers.DietSerializer(diets, many=True)
@@ -40,7 +41,7 @@ class DietView(APIView):
         return Response(
             {
                 "data": serializer.data,
-                "diet_saved_date": dietlist_date,
+                "diet_saved_date": diet_saved_date,
                 "user_weight": request.user.weight,
                 "user_recommended_calorie": user_serializer.data["recommended_calorie"],
             },
@@ -156,4 +157,3 @@ class ReviewView(APIView):
             review.save()
         serializer = serializers.ReviewPutSerializer(specific_reviews, many=True)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        
