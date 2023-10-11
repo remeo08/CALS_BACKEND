@@ -11,31 +11,31 @@ from users.models import User
 
 
 class DietView(APIView):
-    # def get(self, request):
-    #     specific_date = request.query_params.get("created_date", "")
-
-    #     diet_saved_date=DietList.objects.filter(user=request.user).values_list("created_date", flat=True).order_by("created_date").distinct()
-
-    #     diets = DietList.objects.filter(user=request.user, created_date=specific_date)
-    #     serializer = serializers.DietSerializer(diets, many=True)
-
-    #     user = User.objects.get(id=request.user.id)
-    #     user_serializer = UserSerializer(user)
-
-    #     return Response(
-    #         {
-    #             "data": serializer.data,
-    #             "diet_saved_date": diet_saved_date,
-    #             "user_weight": request.user.weight,
-    #             "user_recommended_calorie": user_serializer.data["recommended_calorie"],
-    #         },
-    #         status=status.HTTP_200_OK,
-    #     )
-    
     def get(self, request):
-        dietlist = DietList.objects.filter(user=request.user)
-        serializer = serializers.DietSerializer(dietlist, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        specific_date = request.query_params.get("created_date", "")
+
+        diet_saved_date=DietList.objects.filter(user=request.user).values_list("created_date", flat=True).order_by("created_date").distinct()
+
+        diets = DietList.objects.filter(user=request.user, created_date=specific_date)
+        serializer = serializers.DietSerializer(diets, many=True)
+
+        user = User.objects.get(id=request.user.id)
+        user_serializer = UserSerializer(user)
+
+        return Response(
+            {
+                "data": serializer.data,
+                "diet_saved_date": diet_saved_date,
+                "user_weight": request.user.weight,
+                "user_recommended_calorie": user_serializer.data["recommended_calorie"],
+            },
+            status=status.HTTP_200_OK,
+        )
+    
+    # def get(self, request):
+    #     dietlist = DietList.objects.filter(user=request.user)
+    #     serializer = serializers.DietSerializer(dietlist, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = serializers.DietSerializer(data=request.data)
