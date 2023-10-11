@@ -33,5 +33,5 @@ class User(AbstractUser):
         default=ActivityLevelChoices.LOWEST,
     )
 
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    # USERNAME_FIELD = "email"
+    # REQUIRED_FIELDS = []
