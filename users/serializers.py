@@ -78,7 +78,6 @@ class UserPutSerializer(ModelSerializer, RecommendedCalorieMixin):
         model = User
         fields = (
             "username",
-            "password",
             "height",
             "weight",
             "activity",
