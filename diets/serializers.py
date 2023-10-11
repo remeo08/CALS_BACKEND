@@ -59,17 +59,12 @@ class DietSerializer(serializers.ModelSerializer, RecommendedCalorieMixin):
 
     def get_daily_star_rating(self, diets):
         daily_total_calorie = self.get_daily_calorie_sum(diets)
-        meal_calorie = diets.meal_calorie
         recommended_calorie = self.get_recommended_calorie(diets.user)
 
-        meal_calorie = float(meal_calorie)
-
-        total_calorie = daily_total_calorie + meal_calorie
-
-        if 0 <= total_calorie and total_calorie <= recommended_calorie:
+        if 0 <= daily_total_calorie and daily_total_calorie <= recommended_calorie:
             return 5.0
-        elif recommended_calorie < total_calorie:
-            calorie_difference = total_calorie - recommended_calorie
+        elif recommended_calorie < daily_total_calorie:
+            calorie_difference = daily_total_calorie - recommended_calorie
             if calorie_difference <= 100:
                 star = 4.0
             elif calorie_difference <= 200:
