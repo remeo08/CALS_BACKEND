@@ -13,21 +13,23 @@ from users.models import User
 class DietView(APIView):
     def get(self, request):
         specific_date = request.query_params.get("created_date", "")
-        year, month, day = specific_date.split("-")
-        year = int(year)
-        month = int(month)
 
-        first_day = datetime(year, month, 1)
-        next_month = datetime(year, month, 1) + relativedelta(months=1)
-        this_month_last = next_month + relativedelta(seconds=-1)
+        # 한 달 날짜 범위 설정하는 법
+        # year, month, day = specific_date.split("-")
+        # year = int(year)
+        # month = int(month)
+        # first_day = datetime(year, month, 1)
+        # next_month = datetime(year, month, 1) + relativedelta(months=1)
+        # this_month_last = next_month + relativedelta(seconds=-1)
+        # this_month_created = (
+        #     DietList.objects.filter(
+        #         created_date__gte=first_day, created_date__lte=this_month_last
+        #     )
+        #     .values_list("created_date", flat=True)
+        #     .distinct()
+        # )
 
-        this_month_created = (
-            DietList.objects.filter(
-                created_date__gte=first_day, created_date__lte=this_month_last
-            )
-            .values_list("created_date", flat=True)
-            .distinct()
-        )
+        dietlist_date = DietList.objects.values_list("created_date", flat=True).order_by("created_date").distinct()
 
         diets = DietList.objects.filter(user=request.user, created_date=specific_date)
         serializer = serializers.DietSerializer(diets, many=True)
@@ -38,7 +40,7 @@ class DietView(APIView):
         return Response(
             {
                 "data": serializer.data,
-                "diet_saved_date": this_month_created,
+                "diet_saved_date": dietlist_date,
                 "user_weight": request.user.weight,
                 "user_recommended_calorie": user_serializer.data["recommended_calorie"],
             },
