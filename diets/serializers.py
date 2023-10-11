@@ -66,21 +66,21 @@ class DietSerializer(serializers.ModelSerializer, RecommendedCalorieMixin):
 
         total_calorie = daily_total_calorie + meal_calorie
 
-        if 0 <= total_calorie <= recommended_calorie:
+        if 0 <= total_calorie and total_calorie <= recommended_calorie:
             return 5.0
         elif recommended_calorie < total_calorie:
             calorie_difference = total_calorie - recommended_calorie
             if calorie_difference <= 100:
-                star = 1.0
-            elif calorie_difference <= 200:
-                star = 2.0
-            elif calorie_difference <= 300:
-                star = 3.0
-            elif calorie_difference <= 400:
                 star = 4.0
+            elif calorie_difference <= 200:
+                star = 3.0
+            elif calorie_difference <= 300:
+                star = 2.0
+            elif calorie_difference <= 400:
+                star = 1.0
             else:
-                star = 5.0
-            return (5.0 - star)
+                star = 0.0
+            return star
 
 
 class ReviewPutSerializer(serializers.ModelSerializer):
